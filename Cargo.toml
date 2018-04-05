@@ -1,0 +1,11 @@
+[package]
+name = "samari-rs"
+version = "0.1.0"
+authors = ["Hiromitsu Oshiba <h.oshiba.0117@gmail.com>"]
+
+[dependencies]
+reqwest = "0.8.5"
+serde = "*"
+serde_json = "*"
+serde_derive = "*"
+hyper = "*"
