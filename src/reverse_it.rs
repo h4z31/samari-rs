@@ -2,6 +2,7 @@ use reqwest::*;
 
 header! { (ReverseItApikey, "api-key") => [String] }
 
+/// client for reverse.it
 pub struct ReverseItClient {
     apikey: String,
     root: String,
@@ -53,7 +54,7 @@ pub struct SearchResult {
     pub environment_id: String,
     pub environment_description: String,
     pub size: i64,
-    #[serde(rename="type")] // cannot use keyword "type" in Rust
+    #[serde(rename = "type")] // cannot use keyword "type" in Rust
     pub filetype: String,
     pub type_short: Vec<String>,
     pub target_url: Option<String>,
@@ -91,18 +92,18 @@ pub struct ScreenShot {
 }
 
 impl ReverseItClient {
-
-    pub fn new(apikey: &str) -> ReverseItClient {
-        ReverseItClient{
-            apikey: String::from(apikey),
+    pub fn new<S: AsRef<str>>(apikey: S) -> ReverseItClient {
+        ReverseItClient {
+            apikey: String::from(apikey.as_ref()),
             root: String::from("https://www.reverse.it/api/v2"),
         }
     }
 
-    pub fn search(&self, hash: &str) -> Result<Vec<SearchResult>> {
-        let params = [("hash", hash)];
+    pub fn search<S: AsRef<str>>(&self, hash: S) -> Result<Vec<SearchResult>> {
+        let params = [("hash", hash.as_ref())];
         let client = Client::new();
-        let result: Vec<SearchResult> = client.post(format!("{}/search/hash", self.root).as_str())
+        let result: Vec<SearchResult> = client
+            .post(format!("{}/search/hash", self.root).as_str())
             .header(header::UserAgent::new("Falcon Sandbox"))
             .header(ReverseItApikey(self.apikey.clone()))
             .form(&params)
@@ -114,8 +115,8 @@ impl ReverseItClient {
 
 #[cfg(test)]
 mod tests {
-    use std::env;
     use super::*;
+    use std::env;
 
     #[test]
     fn works() {
@@ -125,6 +126,8 @@ mod tests {
         };
 
         let client = ReverseItClient::new(key.as_str());
-        let _ = client.search("7e7af056f88c60c3b55adebe54b73370703a5533c5d0982a8752ef94327c6acd").unwrap();
+        let _ = client
+            .search("7e7af056f88c60c3b55adebe54b73370703a5533c5d0982a8752ef94327c6acd")
+            .unwrap();
     }
 }
